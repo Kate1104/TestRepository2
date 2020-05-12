@@ -15,7 +15,7 @@
 
 // 定数
 //------------------------------------------------------------------
-#define SCREEN_SIZE_X 800		// 画面サイズ横
+#define SCREEN_SIZE_X 1000		// 画面サイズ横
 #define SCREEN_SIZE_Y 500		// 画面サイズ縦
 
 // 列挙型
@@ -43,6 +43,11 @@ struct POS
 	int mapPos;
 	int x;
 	int y;
+};
+
+struct XY_F {
+	float x;
+	float y;
 };
 
 // プロトタイプ宣言
