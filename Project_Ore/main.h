@@ -12,6 +12,7 @@
 #define G	 9.8f					// [m/s2]
 #define A	10.0f					// [m/s2]
 #define FRAME_TIME	0.3f	// [s]
+#define VELOCITY_X_MAX 5.0
 
 // 定数
 //------------------------------------------------------------------
@@ -29,6 +30,13 @@ enum SCENE_ID {
 	SCENE_ID_MAX
 };
 
+enum DIR
+{
+	DIR_RIGHT,
+	DIR_LEFT,
+	DIR_MAX
+};
+
 // 構造体
 //------------------------------------------------------------------
 struct XY
@@ -40,7 +48,6 @@ struct XY
 struct POS
 {
 	int playerPos;
-	int mapPos;
 	int x;
 	int y;
 };
@@ -48,6 +55,26 @@ struct POS
 struct XY_F {
 	float x;
 	float y;
+};
+
+struct CHARACTER {
+	DIR moveDir;				//向いている方向
+	XY pos;						//キャラクタの位置（中心）
+	XY size;					//キャラクタ画像のサイズ
+	XY offsetSize;				//キャラクタ中央からの左上位置
+	XY hitPosS;					//当たり判定用の左上
+	XY hitPosE;					//当たり判定用の右下
+	bool runFlag;				//キャラクタの状態（走っているか？）
+	bool jumpFlag;				//キャラクタの状態（ジャンプしているか？）
+	bool shotFlag;				//キャラクタの状態（弾撃っているか？）
+	bool damageFlag;			//キャラクタの状態（ダメージ受けているか？）
+	XY_F velocity;
+	int moveSpeed;				//キャラクタの移動量
+	int life;					//キャラクタの体力
+	int lifeMax;				//キャラクタの体力最大
+	int animCnt;				//キャラクタのアニメーション用カウンタ
+	int imgLockCnt;				//キャラクタのイメージ固定用カウンタ
+	bool visible;				//true：表示する	false：表示されない
 };
 
 // プロトタイプ宣言

@@ -3,6 +3,7 @@
 #include "Effect.h"
 #include "KeyCheck.h"
 #include "player.h"
+#include "stage.h"
 
 
 // 変数
@@ -169,6 +170,7 @@ bool SystemInit(void)
 	KeyInit();				// キー情報の初期化
 
 	PlayerSystemInit();
+	StageSysteminit();
 	return true;
 }
 
@@ -180,6 +182,7 @@ void InitScene(void)
 
 	sceneID = SCENE_ID_TITLE;
 
+	StageGameInit();
 	PlayerGameInit();
 }
 
@@ -226,6 +229,7 @@ void GameScene(void)
 	}
 
 	// 画面描画
+	StageGameDraw();
 	GameDraw();
 
 	// Pauseメッセージを描画
