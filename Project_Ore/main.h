@@ -12,12 +12,20 @@
 #define G	 9.8f					// [m/s2]
 #define A	10.0f					// [m/s2]
 #define FRAME_TIME	0.3f	// [s]
+#define ACC_G  10	//重力加速度
+#define ACC_RUN  0.15	//走る速度
+#define ACC_STOP  0.10	//停止速度
 #define VELOCITY_X_MAX 5.0
+#define INIT_VELOCITY 50.0f	// 初速度
 
 // 定数
 //------------------------------------------------------------------
 #define SCREEN_SIZE_X 1000		// 画面サイズ横
 #define SCREEN_SIZE_Y 500		// 画面サイズ縦
+
+#define NOMAL_INDEX 0
+#define SHOT_INDEX 1
+#define SHOT_IMGLOCK 20
 
 // 列挙型
 //------------------------------------------------------------------

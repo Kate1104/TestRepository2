@@ -5,6 +5,12 @@
 #include "stage.h"
 
 CHARACTER player;
+int plStopImage[2];
+int plRunImage[2][4];
+int plJumpImage[2];
+
+int p1DamageImage;				// ダメージ画像
+int p1TobichiriImage[6];		// 飛び散り画像
 
 XY blockPos;
 
@@ -14,12 +20,23 @@ XY playerPosHitDown;
 
 XY_F velocity0;			// プレイヤーの初速度格納領域
 XY_F velocity;			// プレイヤーの速度格納領域
-bool runFlag;			// 実行フラグ
-float ptime;			// プレイヤーの経過時間格納領域
+float ptime;	// プレイヤーの経過時間格納領域
+
 
 void PlayerSystemInit(void)
 {
-	runFlag = false;
+	plStopImage[NOMAL_INDEX] = LoadGraph("image/stop.png");
+	plStopImage[SHOT_INDEX] = LoadGraph("image/stop_shot.png");
+
+	plJumpImage[NOMAL_INDEX] = LoadGraph("image/jump.png");
+
+	LoadDivGraph("image/run.png", 4, 4, 1
+		, PLAYER_SIZE_X, PLAYER_SIZE_Y
+		, plRunImage[NOMAL_INDEX]);
+
+	LoadDivGraph("image/run_shot.png", 4, 4, 1
+		, PLAYER_SIZE_X, PLAYER_SIZE_Y
+		, plRunImage[SHOT_INDEX]);
 
 	// 等速直線運動
 	velocity0.x = 0.0f;	// [m/s]
@@ -27,27 +44,39 @@ void PlayerSystemInit(void)
 
 	velocity0.y = 75.0f;	// [m/s]
 	velocity.y = velocity0.x;
+
+	ptime = 0;
 }
 
 void PlayerGameInit(void)
 {
+	//構造体の初期化
+	player.moveDir = DIR_RIGHT;					//向いている方向
 	player.pos.x = { (PLAYER_SIZE_X) };
 	player.pos.y = { (SCREEN_SIZE_Y - PLAYER_SIZE_Y) / 2 };
+	player.size = { PLAYER_SIZE_X,PLAYER_SIZE_Y };							//キャラクタ画像のサイズ					//キャラクタ画像のサイズ
+	player.offsetSize = { player.size.x / 2,player.size.y / 2 };	//キャラクタ中央からの左上位置
+	player.hitPosS = { 20,16 };								//当たり判定用の左上
+	player.hitPosE = { 20,32 };								//当たり判定用の右下
+	player.animCnt = 0;							//キャラクタのアニメーション用カウンタ
+	player.imgLockCnt = 30;						//キャラクタのイメージ固定用カウンタ
 	player.velocity = { 0.0f , 0 };
 
 	player.runFlag = false;						//キャラクタの状態（走っているか？）
 	player.shotFlag = false;					//キャラクタの状態（弾撃っているか？）
 	player.damageFlag = false;					//キャラクタの状態（ダメージ受けているか？）
-	
+
+	blockPos = { 0,0 };
 }
 
-bool PlayerHitCheck(void)
-{
-	return true;
-}
 
 void PlayerControl(void)
 {
+	bool moveFlag = false;
+	player.runFlag = false;
+	player.shotFlag = false;
+	player.jumpFlag = true;
+
 	XY playerPosCopy = player.pos;
 	XY playerPosOffset = playerPosCopy;
 
@@ -57,103 +86,120 @@ void PlayerControl(void)
 
 	player.imgLockCnt++;
 
-	// 等速直線運動
-	if (CheckHitKey(KEY_INPUT_UP))
+	// プレイヤーのキー操作
+	// 左
+	if (keyNew[KEY_ID_LEFT])
 	{
-		runFlag = true;
+		player.moveDir = DIR_LEFT;
+		moveFlag = true;
+		player.runFlag = true;
+
 	}
 
-	bool movedFlag = false;
-
-	//キーを押しているとき
-	if (CheckHitKey(KEY_INPUT_RIGHT))
+	// 右
+	if (keyNew[KEY_ID_RIGHT])
 	{
-		velocity.x += 1;
-		movedFlag = true;
+		player.moveDir = DIR_RIGHT;
+		moveFlag = true;
+		player.runFlag = true;
 	}
-	if (velocity.x > 10) velocity.x = 10;
 
-	if (CheckHitKey(KEY_INPUT_LEFT))
+	// 移動処理(X座標)	移動キーを押しているとき
+	if (moveFlag)
 	{
-		velocity.x -= 1;
-		movedFlag = true;
+		if (player.moveDir == DIR_LEFT)
+		{
+			if (player.velocity.x < -VELOCITY_X_MAX)player.velocity.x = -VELOCITY_X_MAX;
+			player.velocity.x -= ACC_RUN;
+		}
+
+		if (player.moveDir == DIR_RIGHT)
+		{
+			if (player.velocity.x > VELOCITY_X_MAX)player.velocity.x = VELOCITY_X_MAX;
+			player.velocity.x += ACC_RUN;
+		}
+
 	}
-	if (velocity.x < -10) velocity.x = -10;
 
 	//キーを押していないとき（速度の減速）
-	if (!movedFlag)
+	else /*if (moveFlag == false)*/
 	{
-		if (velocity.x < 0)
+		if (player.velocity.x > 0)
 		{
-			velocity.x += 3;
+			player.velocity.x -= ACC_STOP;
 		}
-		else if (velocity.x > 0)
+		else if (player.velocity.x < 0)
 		{
-			velocity.x -= 3;
+			player.velocity.x += ACC_STOP;
 		}
 
 		//速度がほとんどない場合(誤差)は止める
-		if (velocity.x > -2 && velocity.x < 2)
+		if (player.velocity.x < ACC_STOP && player.velocity.x > -ACC_STOP)player.velocity.x = 0;
+	}
+
+	//ジャンプ----------------------------------------------------------------------------------------------------
+		// ジャンプ中の処理(Y座標)
+	if (player.jumpFlag)
+	{
+		// 速度の計算
+		player.velocity.y -= G * (FRAME_TIME * 1.5);
+
+		// 距離の計算
+		playerPosCopy.y -= player.velocity.y * (FRAME_TIME / 1.5);
+		/*playerPosHit.y = playerPosCopy.y + player.hitPosE.y;*/
+
+		//頭上にブロックがあるかをチェック
+		playerPosHit.y = playerPosCopy.y - player.hitPosS.x;
+		playerPosHitUp = playerPosHit;
+		playerPosHitUp.x -= player.hitPosS.x;
+		playerPosHitDown = playerPosHit;
+		playerPosHitDown.x += player.hitPosE.x;
+		//ブロックのぎりぎりまで顔が近づく
+		if (!IsPass(playerPosHit)
+			|| !IsPass(playerPosHitUp)
+			|| !IsPass(playerPosHitDown))
 		{
-			velocity.x = 0;
+			player.pos.y = playerPosCopy.y;
+			blockPos = MapIndexToPos(MapPosToIndex(playerPosHit));
+			blockPos.y = blockPos.y + CHIP_SIZE_Y;
+			playerPosCopy.y = blockPos.y + player.hitPosS.y;
+			player.velocity.y = -1 * player.velocity.y;
+		}
+
+		//足元にブロックがあるか？
+		playerPosHit.y = playerPosCopy.y + player.hitPosE.y;
+		playerPosHitUp = playerPosHit;
+		playerPosHitUp.x -= player.hitPosS.x;
+		playerPosHitDown = playerPosHit;
+		playerPosHitDown.x += player.hitPosE.x;
+
+		// ジャンプの終了を検出
+		if (IsPass(playerPosHit)
+			&& IsPass(playerPosHitUp)
+			&& IsPass(playerPosHitDown))
+		{
+			player.pos.y = playerPosCopy.y;
+		}
+		else
+		{
+			//ジャンプの終了は足元の座標から位置を割り出す
+			//ブロックにプレイヤーが乗った
+			//プレイヤーの足元の座標 = ブロックの上の面
+			blockPos = MapIndexToPos(MapPosToIndex(playerPosHit));
+			player.pos.y = blockPos.y - player.hitPosE.y;
+
+			player.jumpFlag = false;
+			player.velocity.y = 0;
+
+			// ジャンプ
+			if (keyNew[KEY_ID_UP])
+			{
+				player.jumpFlag = true;
+				if (player.velocity.y == 0)player.velocity.y = INIT_VELOCITY;	//初速度が0の時のみ初速度を代入
+			}
 		}
 	}
 
-	player.pos.x += velocity.x * FRAME_TIME;
-
-	// 実行
-	if (runFlag)
-	{
-		//ジャンプ--------------------------------------------------------------------------------------------
-		//速度の計算
-		velocity.y -= G * (FRAME_TIME * 1.5);
-
-		//距離の計算
-		player.pos.y -= velocity.y * (FRAME_TIME / 1.5);
-
-		if (player.pos.y > 300)
-		{
-			runFlag = false;
-			velocity.y = velocity0.y;
-			player.pos.y = 300;
-		}
-	}
-
-	//移動
-	if (keyNew[KEY_ID_LEFT]) player.pos.x -= 4;
-	if (keyNew[KEY_ID_RIGHT]) player.pos.x += 4;
-
-	//スクロール
-	/*if (playerPosCopy.x - mapPos.x <= SCROLL_X_MIN)
-	{
-		if (player.velocity.x < -VELOCITY_X_MAX)player.velocity.x = -VELOCITY_X_MAX;
-		mapPos.x += player.velocity.x;
-	}*/
-
-	//頭上にブロックがあるかをチェック
-	playerPosHit.y = playerPosCopy.y - player.hitPosS.x;
-	playerPosHitUp = playerPosHit;
-	playerPosHitUp.x -= player.hitPosS.x;
-	playerPosHitDown = playerPosHit;
-	playerPosHitDown.x += player.hitPosE.x;
-	//ブロックのぎりぎりまで顔が近づく
-	if (!IsPass(playerPosHit)
-		|| !IsPass(playerPosHitUp)
-		|| !IsPass(playerPosHitDown))
-	{
-		player.pos.y = playerPosCopy.y;
-		blockPos = MapIndexToPos(MapPosToIndex(playerPosHit));
-		blockPos.y = blockPos.y + CHIP_SIZE_Y;
-		playerPosCopy.y = blockPos.y + player.hitPosS.y;
-		player.velocity.y = -1 * player.velocity.y;
-	}
-
-	//足元にブロックがあるか？
-	playerPosHit.y = playerPosCopy.y + player.hitPosE.y;
-	playerPosHitUp = playerPosHit;
-	playerPosHitUp.x -= player.hitPosS.x;
-	playerPosHitDown = playerPosHit;
-	playerPosHitDown.x += player.hitPosE.x;
 
 	//初期化
 	playerPosCopy = player.pos;
@@ -180,56 +226,124 @@ void PlayerControl(void)
 		}
 	}
 
-	if (playerPosCopy.x - mapPos.x >= SCROLL_X_MAX)
+	else if (player.velocity.x > 0)
 	{
-		if (player.velocity.x > VELOCITY_X_MAX)player.velocity.x = VELOCITY_X_MAX;
-		mapPos.x += player.velocity.x;
+		playerPosCopy.x += player.velocity.x;
+		playerPosHit.x = playerPosCopy.x + player.hitPosE.x;
 
-		//スクロール制限　右
-		if (player.pos.x - mapPos.x > 200)
+		playerPosHitUp = playerPosHit;
+		playerPosHitUp.y -= player.hitPosS.y;
+
+		playerPosHitDown = playerPosHit;
+		playerPosHitDown.y += player.hitPosE.y - 1;
+
+		//スクロール
+		if (playerPosCopy.x - mapPos.x >= SCROLL_X_MAX)
 		{
-			mapPos.x += 4;
-			/*if (player.pos.x > 999)player.velocity.x = 0;*/
+			if (player.velocity.x > VELOCITY_X_MAX)player.velocity.x = VELOCITY_X_MAX;
+			mapPos.x += player.velocity.x;
 
+			//スクロール制限　右
+			if (player.pos.x - mapPos.x > 200)
+			{
+				mapPos.x += player.velocity.x;
+			}
 			//スクロール制限　左
 			if (player.pos.x - mapPos.x < 150)
 			{
-				mapPos.x -= 4;
-				/*if (500 - player.pos.x > 600)player.velocity.x = 0;*/
+				mapPos.x -= player.velocity.x;
 			}
 		}
-		
-		if (mapPos.x < 0)
-		{
-			mapPos.x = 0;
-		}
-		if (mapPos.x > (CHIP_SIZE_X * MAP_X) - SCREEN_SIZE_X)
-		{
-			mapPos.x = (CHIP_SIZE_X * MAP_X) - SCREEN_SIZE_X;
-		}
-
-		//// 壁との当たり判定
-		//if (IsPass(playerPosHit)
-		//	&& IsPass(playerPosHitUp)
-		//	&& IsPass(playerPosHitDown))
-		//{
-		//	player.pos.x = playerPosCopy.x;
-		//}
-		//else
-		//{
-		//	player.velocity.x = 0;
-		//}
-
 	}
-	/*if (CheckHitKey(KEY_INPUT_UP)) playerPos.y -= 4;
-	if (CheckHitKey(KEY_INPUT_DOWN)) playerPos.y += 4;*/
 
+	// 壁との当たり判定
+	if (IsPass(playerPosHit)
+		&& IsPass(playerPosHitUp)
+		&& IsPass(playerPosHitDown))
+	{
+		player.pos.x = playerPosCopy.x;
+	}
+	else
+	{
+		player.velocity.x = 0;
+	}
 
+	if (mapPos.x < 0)
+	{
+		mapPos.x = 0;
+	}
+	if (mapPos.x > (CHIP_SIZE_X * MAP_X) - SCREEN_SIZE_X)
+	{
+		mapPos.x = (CHIP_SIZE_X * MAP_X) - SCREEN_SIZE_X;
+	}
+
+}
+
+bool PlayerHitCheck(XY sPos, int sSise)
+{
+	return true;
 }
 
 void PlayerDraw(void)
 {
-	DrawCircle((-mapPos.x + player.pos.x), (-mapPos.y + player.pos.y) , PLAYER_SIZE_X, GetColor(255, 255, 255), true);
-	DrawFormatString(0, 32, GetColor(255, 255, 255), "playerPos : (%d , %d)", player.pos);
-	DrawFormatString(0, 50, GetColor(255, 255, 255), "mapPos: (%d , %d)", mapPos);
+	int playerImage;
+	int playerShotStatus;
+
+	playerShotStatus = (player.imgLockCnt < SHOT_IMGLOCK) ? SHOT_INDEX : NOMAL_INDEX;
+
+	playerImage = plStopImage[playerShotStatus];
+
+	if (player.runFlag) playerImage = plRunImage[playerShotStatus][player.animCnt / 10 % 4];
+	if (player.jumpFlag) playerImage = plJumpImage[playerShotStatus];
+	if (player.damageFlag) playerImage = p1DamageImage;
+
+	if (player.moveDir == DIR_LEFT)
+	{
+		DrawTurnGraph(player.pos.x - player.offsetSize.x - mapPos.x
+			, player.pos.y - player.offsetSize.y - mapPos.y
+			, playerImage, true);
+	}
+	else
+	{
+		DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
+			, player.pos.y - player.offsetSize.y - mapPos.y
+			, playerImage, true);
+	}
+
+	// プレイヤーのサイズ枠
+	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
+		, player.pos.y - player.offsetSize.y - mapPos.y
+		, player.pos.x + player.offsetSize.x - mapPos.x
+		, player.pos.y + player.offsetSize.y - mapPos.y
+		, GetColor(255, 0, 0)
+		, false);
+
+		// プレイヤーの当たり判定枠
+		DrawBox(player.pos.x - player.hitPosS.x - mapPos.x
+			, player.pos.y - player.hitPosS.y - mapPos.y
+			, player.pos.x + player.hitPosE.x - mapPos.x
+			, player.pos.y + player.hitPosE.y - mapPos.y
+			, GetColor(255, 255, 255)
+			, false);
+
+	/*DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
+		, player.pos.y - player.size.y / 2 - mapPos.y
+		, player.pos.x - player.offsetSize.x - mapPos.x + player.lifeMax * 10
+		, player.pos.y - player.size.y / 2 - 7 - mapPos.y, GetColor(255, 0, 0), true);
+
+	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
+		, player.pos.y - player.size.y / 2 - mapPos.y
+		, player.pos.x - player.offsetSize.x - mapPos.x + player.life * 10
+		, player.pos.y - player.size.y / 2 - 7 - mapPos.y, GetColor(0, 255, 0), true);
+
+	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
+		, player.pos.y - player.size.y / 2 - mapPos.y
+		, player.pos.x - player.offsetSize.x - mapPos.x + player.lifeMax * 10
+		, player.pos.y - player.size.y / 2 - 7 - mapPos.y, GetColor(0, 0, 0), false);*/
+
+	DrawFormatString(0, 32, GetColor(0, 0, 0), "playerPos : (%d , %d)", player.pos);
+	DrawFormatString(0, 100, GetColor(0, 0, 0), "mapPos: (%d , %d)", mapPos);
+	//DrawFormatString(0, 100, GetColor(0, 0, 0), "playerlife, %d", player.life);
+	//DrawFormatString(0, 132, GetColor(0, 0, 0), "playerCounter, %d", playerCounter);
+	player.animCnt++;
 }
