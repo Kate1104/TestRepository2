@@ -60,6 +60,7 @@ void StageGameDraw(void)
 				, chipImage[mapData[y][x]], true);
 		}
 	}
+	SetDrawBright(50, 50, 50);
 }
 
 //ピクセル座標系からマップ座標系に変換

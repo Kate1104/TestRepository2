@@ -8,6 +8,7 @@ CHARACTER player;
 int plStopImage[2];
 int plRunImage[2][4];
 int plJumpImage[2];
+int rightImage;
 
 int p1DamageImage;				// ダメージ画像
 int p1TobichiriImage[6];		// 飛び散り画像
@@ -37,6 +38,8 @@ void PlayerSystemInit(void)
 	LoadDivGraph("image/run_shot.png", 4, 4, 1
 		, PLAYER_SIZE_X, PLAYER_SIZE_Y
 		, plRunImage[SHOT_INDEX]);
+
+	rightImage = LoadGraph("image/right.png");
 
 	// 等速直線運動
 	velocity0.x = 0.0f;	// [m/s]
@@ -109,13 +112,13 @@ void PlayerControl(void)
 	{
 		if (player.moveDir == DIR_LEFT)
 		{
-			if (player.velocity.x < -VELOCITY_X_MAX)player.velocity.x = -VELOCITY_X_MAX;
+			player.velocity.x = -VELOCITY_X_MAX;
 			player.velocity.x -= ACC_RUN;
 		}
 
 		if (player.moveDir == DIR_RIGHT)
 		{
-			if (player.velocity.x > VELOCITY_X_MAX)player.velocity.x = VELOCITY_X_MAX;
+			player.velocity.x = VELOCITY_X_MAX;
 			player.velocity.x += ACC_RUN;
 		}
 
@@ -244,12 +247,12 @@ void PlayerControl(void)
 			mapPos.x += player.velocity.x;
 
 			//スクロール制限　右
-			if (player.pos.x - mapPos.x > 200)
+			if (player.pos.x - mapPos.x > 200)	//距離を測る
 			{
 				mapPos.x += player.velocity.x;
 			}
 			//スクロール制限　左
-			if (player.pos.x - mapPos.x < 150)
+			if (player.pos.x - mapPos.x < 150)	//距離を測る
 			{
 				mapPos.x -= player.velocity.x;
 			}
@@ -276,7 +279,6 @@ void PlayerControl(void)
 	{
 		mapPos.x = (CHIP_SIZE_X * MAP_X) - SCREEN_SIZE_X;
 	}
-
 }
 
 bool PlayerHitCheck(XY sPos, int sSise)
@@ -302,6 +304,7 @@ void PlayerDraw(void)
 		DrawTurnGraph(player.pos.x - player.offsetSize.x - mapPos.x
 			, player.pos.y - player.offsetSize.y - mapPos.y
 			, playerImage, true);
+		
 	}
 	else
 	{
@@ -309,6 +312,11 @@ void PlayerDraw(void)
 			, player.pos.y - player.offsetSize.y - mapPos.y
 			, playerImage, true);
 	}
+
+	DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
+		, player.pos.y - player.offsetSize.y - mapPos.y
+		, rightImage, true);
+
 
 	// プレイヤーのサイズ枠
 	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x

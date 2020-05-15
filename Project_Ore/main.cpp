@@ -155,7 +155,7 @@ bool SystemInit(void)
 
 	// グラフィックの登録
 	//---------------------------------
-	/*見本SetTransColor(255, 0, 255);	*/		//画像の色（マゼンタ）の透過処理
+	SetTransColor(255, 0, 255);			//画像の色（マゼンタ）の透過処理
 
 	/*titleImage = LoadGraph("image/title.png");*/
 
