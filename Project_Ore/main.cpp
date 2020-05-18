@@ -180,7 +180,7 @@ void InitScene(void)
 {
 	fadeIn = true;
 
-	sceneID = SCENE_ID_TITLE;
+	sceneID = SCENE_ID_GAME;
 
 	StageGameInit();
 	PlayerGameInit();
@@ -230,6 +230,7 @@ void GameScene(void)
 
 	// 画面描画
 	StageGameDraw();
+	PlayerDraw();
 	GameDraw();
 
 	// Pauseメッセージを描画
@@ -245,8 +246,6 @@ void GameScene(void)
 
 void GameDraw(void)
 {
-	PlayerDraw();
-
 	DrawLine(0, 300, SCREEN_SIZE_X, 300, GetColor(255, 255, 255), true);
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "GameScene : %d", sceneCounter);
 }

@@ -58,7 +58,7 @@ void PlayerGameInit(void)
 	player.pos.x = { (PLAYER_SIZE_X) };
 	player.pos.y = { (SCREEN_SIZE_Y - PLAYER_SIZE_Y) / 2 };
 	player.size = { PLAYER_SIZE_X,PLAYER_SIZE_Y };							//キャラクタ画像のサイズ					//キャラクタ画像のサイズ
-	player.offsetSize = { player.size.x / 2,player.size.y / 2 };	//キャラクタ中央からの左上位置
+	player.offsetSize = { player.size.x+17 ,player.size.y  };	//キャラクタ中央からの左上位置
 	player.hitPosS = { 20,16 };								//当たり判定用の左上
 	player.hitPosE = { 20,32 };								//当たり判定用の右下
 	player.animCnt = 0;							//キャラクタのアニメーション用カウンタ
@@ -299,6 +299,7 @@ void PlayerDraw(void)
 	if (player.jumpFlag) playerImage = plJumpImage[playerShotStatus];
 	if (player.damageFlag) playerImage = p1DamageImage;
 
+	SetDrawBright(255, 255, 255); //明るく
 	if (player.moveDir == DIR_LEFT)
 	{
 		DrawTurnGraph(player.pos.x - player.offsetSize.x - mapPos.x
@@ -316,7 +317,6 @@ void PlayerDraw(void)
 	DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
 		, player.pos.y - player.offsetSize.y - mapPos.y
 		, rightImage, true);
-
 
 	// プレイヤーのサイズ枠
 	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
@@ -354,4 +354,5 @@ void PlayerDraw(void)
 	//DrawFormatString(0, 100, GetColor(0, 0, 0), "playerlife, %d", player.life);
 	//DrawFormatString(0, 132, GetColor(0, 0, 0), "playerCounter, %d", playerCounter);
 	player.animCnt++;
+
 }
