@@ -39,7 +39,7 @@ void PlayerSystemInit(void)
 		, PLAYER_SIZE_X, PLAYER_SIZE_Y
 		, plRunImage[SHOT_INDEX]);
 
-	rightImage = LoadGraph("image/right.png");
+	rightImage = LoadGraph("image/right2.png");
 
 	// “™‘¬’¼ü‰^“®
 	velocity0.x = 0.0f;	// [m/s]
@@ -129,11 +129,11 @@ void PlayerControl(void)
 	{
 		if (player.velocity.x > 0)
 		{
-			player.velocity.x -= ACC_STOP;
+			player.velocity.x = 0;
 		}
 		else if (player.velocity.x < 0)
 		{
-			player.velocity.x += ACC_STOP;
+			player.velocity.x = 0;
 		}
 
 		//‘¬“x‚ª‚Ù‚Æ‚ñ‚Ç‚È‚¢ê‡(Œë·)‚ÍŽ~‚ß‚é

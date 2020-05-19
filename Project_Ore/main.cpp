@@ -24,6 +24,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		return -1;
 	}
 
+	int Screen = MakeScreen(SCREEN_SIZE_X, SCREEN_SIZE_Y);
+
 	// ゲームループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -129,7 +131,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		sceneCounter++;
 		//playerCounter++;
 
+		SetDrawScreen(DX_SCREEN_BACK);
+		DrawRotaGraph(SCREEN_SIZE_X, SCREEN_SIZE_Y / 2, 2.0f, 0, Screen, FALSE);
 		ScreenFlip();
+		SetDrawScreen(Screen);
 	}
 
 	DxLib_End();		// DXライブラリの終了処理
@@ -156,6 +161,7 @@ bool SystemInit(void)
 	// グラフィックの登録
 	//---------------------------------
 	SetTransColor(255, 0, 255);			//画像の色（マゼンタ）の透過処理
+
 
 	/*titleImage = LoadGraph("image/title.png");*/
 
