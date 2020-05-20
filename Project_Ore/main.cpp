@@ -252,7 +252,7 @@ void GameScene(void)
 
 void GameDraw(void)
 {
-	DrawLine(0, 300, SCREEN_SIZE_X, 300, GetColor(255, 255, 255), true);
+	/*DrawLine(0, 300, SCREEN_SIZE_X, 300, GetColor(255, 255, 255), true);*/
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "GameScene : %d", sceneCounter);
 }
 

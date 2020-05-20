@@ -10,9 +10,6 @@ int plRunImage[2][4];
 int plJumpImage[2];
 int rightImage;
 
-int p1DamageImage;				// ダメージ画像
-int p1TobichiriImage[6];		// 飛び散り画像
-
 XY blockPos;
 
 XY playerPosHit;				//足元の座標
@@ -39,7 +36,7 @@ void PlayerSystemInit(void)
 		, PLAYER_SIZE_X, PLAYER_SIZE_Y
 		, plRunImage[SHOT_INDEX]);
 
-	rightImage = LoadGraph("image/right2.png");
+	rightImage = LoadGraph("image/right.png");
 
 	// 等速直線運動
 	velocity0.x = 0.0f;	// [m/s]
@@ -113,13 +110,13 @@ void PlayerControl(void)
 		if (player.moveDir == DIR_LEFT)
 		{
 			player.velocity.x = -VELOCITY_X_MAX;
-			player.velocity.x -= ACC_RUN;
+			/*player.velocity.x -= ACC_RUN;*/
 		}
 
 		if (player.moveDir == DIR_RIGHT)
 		{
 			player.velocity.x = VELOCITY_X_MAX;
-			player.velocity.x += ACC_RUN;
+			/*player.velocity.x += ACC_RUN;*/
 		}
 
 	}
@@ -227,6 +224,12 @@ void PlayerControl(void)
 			if (player.velocity.x < -VELOCITY_X_MAX)player.velocity.x = -VELOCITY_X_MAX;
 			mapPos.x += player.velocity.x;
 		}
+
+		if (playerPosCopy.y - mapPos.y <= SCROLL_Y_MIN)
+		{
+			if (player.velocity.y < -VELOCITY_X_MAX)player.velocity.y = -VELOCITY_X_MAX;
+			mapPos.y += player.velocity.y;
+		}
 	}
 
 	else if (player.velocity.x > 0)
@@ -255,6 +258,17 @@ void PlayerControl(void)
 			if (player.pos.x - mapPos.x < 150)	//距離を測る
 			{
 				mapPos.x -= player.velocity.x;
+			}
+
+			//スクロール制限　右
+			if (player.pos.y - mapPos.y > 100)	//距離を測る
+			{
+				mapPos.y -= player.velocity.y;
+			}
+			//スクロール制限　左
+			if (player.pos.y - mapPos.y < 100)	//距離を測る
+			{
+				mapPos.y += player.velocity.y;
 			}
 		}
 	}
@@ -297,15 +311,13 @@ void PlayerDraw(void)
 
 	if (player.runFlag) playerImage = plRunImage[playerShotStatus][player.animCnt / 10 % 4];
 	if (player.jumpFlag) playerImage = plJumpImage[playerShotStatus];
-	if (player.damageFlag) playerImage = p1DamageImage;
 
-	SetDrawBright(255, 255, 255); //明るく
+	SetDrawBright(200, 200, 200); //明るく
 	if (player.moveDir == DIR_LEFT)
 	{
 		DrawTurnGraph(player.pos.x - player.offsetSize.x - mapPos.x
 			, player.pos.y - player.offsetSize.y - mapPos.y
 			, playerImage, true);
-		
 	}
 	else
 	{
@@ -313,10 +325,6 @@ void PlayerDraw(void)
 			, player.pos.y - player.offsetSize.y - mapPos.y
 			, playerImage, true);
 	}
-
-	DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
-		, player.pos.y - player.offsetSize.y - mapPos.y
-		, rightImage, true);
 
 	// プレイヤーのサイズ枠
 	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
@@ -334,25 +342,14 @@ void PlayerDraw(void)
 			, GetColor(255, 255, 255)
 			, false);
 
-	/*DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
-		, player.pos.y - player.size.y / 2 - mapPos.y
-		, player.pos.x - player.offsetSize.x - mapPos.x + player.lifeMax * 10
-		, player.pos.y - player.size.y / 2 - 7 - mapPos.y, GetColor(255, 0, 0), true);
-
-	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
-		, player.pos.y - player.size.y / 2 - mapPos.y
-		, player.pos.x - player.offsetSize.x - mapPos.x + player.life * 10
-		, player.pos.y - player.size.y / 2 - 7 - mapPos.y, GetColor(0, 255, 0), true);
-
-	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
-		, player.pos.y - player.size.y / 2 - mapPos.y
-		, player.pos.x - player.offsetSize.x - mapPos.x + player.lifeMax * 10
-		, player.pos.y - player.size.y / 2 - 7 - mapPos.y, GetColor(0, 0, 0), false);*/
-
-	DrawFormatString(0, 32, GetColor(0, 0, 0), "playerPos : (%d , %d)", player.pos);
-	DrawFormatString(0, 100, GetColor(0, 0, 0), "mapPos: (%d , %d)", mapPos);
-	//DrawFormatString(0, 100, GetColor(0, 0, 0), "playerlife, %d", player.life);
+	DrawFormatString(0, 32, GetColor(255, 255, 255), "playerPos : (%d , %d)", player.pos);
+	DrawFormatString(0, 100, GetColor(255, 255, 255), "mapPos: (%d , %d)", mapPos);
 	//DrawFormatString(0, 132, GetColor(0, 0, 0), "playerCounter, %d", playerCounter);
 	player.animCnt++;
+
+	SetDrawBright(255, 255, 255); //明るく
+	DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
+		, player.pos.y - player.offsetSize.y - mapPos.y
+		, rightImage, true);
 
 }

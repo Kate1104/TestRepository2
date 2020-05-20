@@ -1,10 +1,12 @@
 //掕媊---------------------
 #define MAP_X		48	//席踢夋憸偺墶徊睫
 #define MAP_Y		15			//席踢夋憸偺廲徊睫
-#define CHIP_SIZE_X	32				//席踢怜踢夋憸偺墶徊睫
-#define CHIP_SIZE_Y	32				//席踢怜踢夋憸偺廲徊睫
+#define CHIP_SIZE_X	96				//席踢怜踢夋憸偺墶徊睫
+#define CHIP_SIZE_Y	96				//席踢怜踢夋憸偺廲徊睫
 #define SCROLL_X_MIN 400
 #define SCROLL_X_MAX 200
+#define SCROLL_Y_MIN 400
+#define SCROLL_Y_MAX 200
 extern XY mapPos;
 extern int mapData[MAP_Y][MAP_X];
 
