@@ -51,7 +51,7 @@ void StageGameInit(void)
 //¹Ş°Ñ‰æ–Ê‚Ì•\¦ˆ—
 void StageGameDraw(void)
 {
-	SetDrawBright(50, 50, 50);
+	SetDrawBright(40, 40, 40);
 
 	for (int y = 0; y < MAP_Y; y++)
 	{
