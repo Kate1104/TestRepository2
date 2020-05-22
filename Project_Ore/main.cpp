@@ -131,10 +131,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		sceneCounter++;
 		//playerCounter++;
 
-		SetDrawScreen(DX_SCREEN_BACK);
-		DrawRotaGraph(SCREEN_SIZE_X, SCREEN_SIZE_Y / 2, 2.0f, 0, Screen, FALSE);
+		/*SetDrawScreen(DX_SCREEN_BACK);
+		DrawRotaGraph(SCREEN_SIZE_X, SCREEN_SIZE_Y / 2, 2.0f, 0, Screen, FALSE);*/
 		ScreenFlip();
-		SetDrawScreen(Screen);
+		/*SetDrawScreen(Screen);*/
 	}
 
 	DxLib_End();		// DXƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹ˆ—

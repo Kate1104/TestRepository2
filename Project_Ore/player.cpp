@@ -260,15 +260,15 @@ void PlayerControl(void)
 				mapPos.x -= player.velocity.x;
 			}
 
-			//スクロール制限　右
-			if (player.pos.y - mapPos.y > 100)	//距離を測る
+			//スクロール制限　上
+			if (player.pos.y + CHIP_SIZE_Y)	//距離を測る
 			{
-				mapPos.y -= player.velocity.y;
+				mapPos.y += CHIP_SIZE_Y;
 			}
-			//スクロール制限　左
-			if (player.pos.y - mapPos.y < 100)	//距離を測る
+			//スクロール制限　下
+			if (player.pos.y - CHIP_SIZE_Y)	//距離を測る
 			{
-				mapPos.y += player.velocity.y;
+				mapPos.y -= CHIP_SIZE_Y;
 			}
 		}
 	}
@@ -293,6 +293,15 @@ void PlayerControl(void)
 	{
 		mapPos.x = (CHIP_SIZE_X * MAP_X) - SCREEN_SIZE_X;
 	}
+
+	if (mapPos.y < 0)
+	{
+		mapPos.y = 0;
+	}
+	if (mapPos.y > (CHIP_SIZE_Y * MAP_Y) - SCREEN_SIZE_Y)
+	{
+		mapPos.y = (CHIP_SIZE_Y * MAP_Y) - SCREEN_SIZE_Y;
+	}
 }
 
 bool PlayerHitCheck(XY sPos, int sSise)
@@ -311,6 +320,9 @@ void PlayerDraw(void)
 
 	if (player.runFlag) playerImage = plRunImage[playerShotStatus][player.animCnt / 10 % 4];
 	if (player.jumpFlag) playerImage = plJumpImage[playerShotStatus];
+
+	DrawFormatString(0, 32, GetColor(255, 255, 255), "playerPos : (%d , %d)", player.pos);
+	DrawFormatString(0, 100, GetColor(255, 255, 255), "mapPos: (%d , %d)", mapPos);
 
 	SetDrawBright(200, 200, 200); //明るく
 	if (player.moveDir == DIR_LEFT)
@@ -342,8 +354,6 @@ void PlayerDraw(void)
 			, GetColor(255, 255, 255)
 			, false);
 
-	DrawFormatString(0, 32, GetColor(255, 255, 255), "playerPos : (%d , %d)", player.pos);
-	DrawFormatString(0, 100, GetColor(255, 255, 255), "mapPos: (%d , %d)", mapPos);
 	//DrawFormatString(0, 132, GetColor(0, 0, 0), "playerCounter, %d", playerCounter);
 	player.animCnt++;
 
