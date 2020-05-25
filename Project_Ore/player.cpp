@@ -154,6 +154,7 @@ void PlayerControl(void)
 		playerPosHitUp.x -= player.hitPosS.x;
 		playerPosHitDown = playerPosHit;
 		playerPosHitDown.x += player.hitPosE.x;
+
 		//ブロックのぎりぎりまで顔が近づく
 		if (!IsPass(playerPosHit)
 			|| !IsPass(playerPosHitUp)
@@ -166,7 +167,7 @@ void PlayerControl(void)
 			player.velocity.y = -1 * player.velocity.y;
 		}
 
-		//足元にブロックがあるか？
+		//足元の当たり判定
 		playerPosHit.y = playerPosCopy.y + player.hitPosE.y;
 		playerPosHitUp = playerPosHit;
 		playerPosHitUp.x -= player.hitPosS.x;
@@ -260,16 +261,16 @@ void PlayerControl(void)
 				mapPos.x -= player.velocity.x;
 			}
 
-			//スクロール制限　上
-			if (player.pos.y + CHIP_SIZE_Y)	//距離を測る
-			{
-				mapPos.y += CHIP_SIZE_Y;
-			}
-			//スクロール制限　下
-			if (player.pos.y - CHIP_SIZE_Y)	//距離を測る
-			{
-				mapPos.y -= CHIP_SIZE_Y;
-			}
+			////スクロール制限　上
+			//if (player.pos.y + CHIP_SIZE_Y)	//距離を測る
+			//{
+			//	mapPos.y += CHIP_SIZE_Y;
+			//}
+			////スクロール制限　下
+			//if (player.pos.y - CHIP_SIZE_Y)	//距離を測る
+			//{
+			//	mapPos.y -= CHIP_SIZE_Y;
+			//}
 		}
 	}
 
@@ -358,8 +359,8 @@ void PlayerDraw(void)
 	player.animCnt++;
 
 	SetDrawBright(255, 255, 255); //明るく
-	DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
+	/*DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
 		, player.pos.y - player.offsetSize.y - mapPos.y
-		, rightImage, true);
+		, rightImage, true);*/
 
 }
