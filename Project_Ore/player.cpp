@@ -7,8 +7,8 @@
 CHARACTER player;
 int plStopImage[2];
 int plRunImage[2][4];
-int plJumpImage[2];
 int rightImage;
+int plJumpImage[2];
 
 XY blockPos;
 
