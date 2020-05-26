@@ -55,8 +55,8 @@ void PlayerGameInit(void)
 	player.pos.x = { (PLAYER_SIZE_X) };
 	player.pos.y = { (SCREEN_SIZE_Y - PLAYER_SIZE_Y) / 2 };
 	player.size = { PLAYER_SIZE_X,PLAYER_SIZE_Y };							//キャラクタ画像のサイズ					//キャラクタ画像のサイズ
-	player.offsetSize = { player.size.x+17 ,player.size.y  };	//キャラクタ中央からの左上位置
-	player.hitPosS = { 20,16 };								//当たり判定用の左上
+	player.offsetSize = { player.size.x ,player.size.y-11  };	//キャラクタ中央からの左上位置
+	player.hitPosS = { 20,32 };								//当たり判定用の左上
 	player.hitPosE = { 20,32 };								//当たり判定用の右下
 	player.animCnt = 0;							//キャラクタのアニメーション用カウンタ
 	player.imgLockCnt = 30;						//キャラクタのイメージ固定用カウンタ
@@ -226,11 +226,11 @@ void PlayerControl(void)
 			mapPos.x += player.velocity.x;
 		}
 
-		if (playerPosCopy.y - mapPos.y <= SCROLL_Y_MIN)
+		/*if (playerPosCopy.y - mapPos.y <= SCROLL_Y_MIN)
 		{
 			if (player.velocity.y < -VELOCITY_X_MAX)player.velocity.y = -VELOCITY_X_MAX;
 			mapPos.y += player.velocity.y;
-		}
+		}*/
 	}
 
 	else if (player.velocity.x > 0)
@@ -339,13 +339,13 @@ void PlayerDraw(void)
 			, playerImage, true);
 	}
 
-	// プレイヤーのサイズ枠
-	DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
-		, player.pos.y - player.offsetSize.y - mapPos.y
-		, player.pos.x + player.offsetSize.x - mapPos.x
-		, player.pos.y + player.offsetSize.y - mapPos.y
-		, GetColor(255, 0, 0)
-		, false);
+	//// プレイヤーのサイズ枠
+	//DrawBox(player.pos.x - player.offsetSize.x - mapPos.x
+	//	, player.pos.y - player.offsetSize.y - mapPos.y
+	//	, player.pos.x + player.offsetSize.x - mapPos.x
+	//	, player.pos.y + player.offsetSize.y - mapPos.y
+	//	, GetColor(255, 0, 0)
+	//	, false);
 
 		// プレイヤーの当たり判定枠
 		DrawBox(player.pos.x - player.hitPosS.x - mapPos.x

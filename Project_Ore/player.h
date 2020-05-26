@@ -1,7 +1,7 @@
 
 
 #define PLAYER_SIZE_X 32
-#define PLAYER_SIZE_Y 32
+#define PLAYER_SIZE_Y 64
 
 // プロトタイプ宣言
 //------------------------------------------------------------------
