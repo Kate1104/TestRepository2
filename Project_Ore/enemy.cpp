@@ -5,50 +5,82 @@
 #include "stage.h"
 #include "enemy.h"
 
-CHARACTER enemy;
+CHARACTER enemyType[ENEMY_TYPE_MAX];
 int enemySimage;	
-int enemyMimage[4];
+int enemyMimage[1][4];
 
 void EnemySystemInit(void)
 {
 	enemySimage = LoadGraph("image/estop.png");
 
 	LoadDivGraph("image/emove.png", 4, 4, 1
-			, ENEMY_SIZE_X, ENEMY_SIZE_Y
-			, enemyMimage[0]);
+		, ENEMY_SIZE_X, ENEMY_SIZE_Y
+		, enemyMimage[ENEMY_ANI_MAX]);
+
 }
 
 void EnemyGameInit(void)
 {
 	//構造体の初期化
-	enemy.moveDir = DIR_RIGHT;					//向いている方向
-	enemy.pos.x = { (PLAYER_SIZE_X) };
-	enemy.pos.y = { (SCREEN_SIZE_Y - PLAYER_SIZE_Y) / 2 };
-	enemy.size = { PLAYER_SIZE_X,PLAYER_SIZE_Y };							//敵画像のサイズ					//敵画像のサイズ
-	enemy.offsetSize = { enemy.size.x ,enemy.size.y - 11 };	//敵中央からの左上位置
-	enemy.hitPosS = { 20,32 };								//当たり判定用の左上
-	enemy.hitPosE = { 20,32 };								//当たり判定用の右下
-	enemy.animCnt = 0;							//キャラクタのアニメーション用カウンタ
-	enemy.imgLockCnt = 30;						//キャラクタのイメージ固定用カウンタ
-	enemy.velocity = { 0.0f , 0 };
+	enemyType[ENEMY_TYPE_BAT].moveDir = DIR_LEFT;	//向いている方向
+	enemyType[ENEMY_TYPE_BAT].cherType = ENEMY_TYPE_BAT;
+	enemyType[ENEMY_TYPE_BAT].pos.x = { ENEMY_SIZE_X * 2};
+	enemyType[ENEMY_TYPE_BAT].pos.y = {(SCREEN_SIZE_Y - ENEMY_SIZE_Y) / 2};
+	enemyType[ENEMY_TYPE_BAT].size = { ENEMY_SIZE_X, ENEMY_SIZE_Y };		//敵画像のサイズ
+	enemyType[ENEMY_TYPE_BAT].moveSpeed = 2;
+	enemyType[ENEMY_TYPE_BAT].lifeMax = 5;
+	enemyType[ENEMY_TYPE_BAT].point = 5;
+	enemyType[ENEMY_TYPE_BAT].imgLockCnt = 30;
 
-	enemy.runFlag = false;						//キャラクタの状態（走っているか？）
-	enemy.shotFlag = false;					//キャラクタの状態（弾撃っているか？）
-	enemy.damageFlag = false;					//キャラクタの状態（ダメージ受けているか？）
-
+	enemyType[ENEMY_TYPE_BAT].runFlag = false;
+	enemyType[ENEMY_TYPE_BAT].shotFlag = false;
 }
 
 bool EnemyHitCheck(void)
 {
-
+	return true;
 }
 
 void EnemyControl(void)
 {
+	bool moveFlag;
 
+	for (int i = 0; i < ENEMY_TYPE_MAX; i++)
+	{
+
+		enemyType[i].runFlag = false;
+		enemyType[i].shotFlag = false;
+
+		enemyType[i].imgLockCnt++;
+
+		//敵の動き
+		if (player.pos.x - enemyType[i].pos.x < 100)
+		{
+			enemyType[i].moveDir = DIR_LEFT;
+			moveFlag = true;
+			enemyType[i].runFlag = true;
+		}
+
+	}
+}
+
+void EnemyGameDrawOrder(int index)
+{
+	enemyType[index].animCnt++;
+
+	if (enemyType[index].runFlag)
+	{
+		DrawGraph(enemyType[index].pos.x - enemyType[index].offsetSize.x - mapPos.x
+			, enemyType[index].pos.y - enemyType[index].offsetSize.y - mapPos.y
+			, enemyMimage[1][index], true);
+	}
+	else
+	{
+		DrawGraph(232, SCREEN_SIZE_Y / 2 - 64, enemySimage, true);
+	}
 }
 
 void EnemyDraw(void)
 {
-
+	
 }

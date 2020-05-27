@@ -3,6 +3,7 @@
 #include "KeyCheck.h"
 #include "player.h"
 #include "stage.h"
+#include "enemy.h"
 
 CHARACTER player;
 int plStopImage[2];

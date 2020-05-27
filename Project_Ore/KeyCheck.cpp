@@ -1,5 +1,6 @@
 #include "Dxlib.h"
 #include "KeyCheck.h"
+#include "enemy.h"
 
 // •Ï”
 //---------------------------------------------------------------

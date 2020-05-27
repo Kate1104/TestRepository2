@@ -45,6 +45,13 @@ enum DIR
 	DIR_MAX
 };
 
+enum ENMEY_TYPE
+{
+	ENEMY_TYPE_BAT,
+	ENEMY_TYPE_SNAKE,
+	ENEMY_TYPE_MAX
+};
+
 // 構造体
 //------------------------------------------------------------------
 struct XY
@@ -66,6 +73,7 @@ struct XY_F {
 };
 
 struct CHARACTER {
+	int cherType;
 	DIR moveDir;				//向いている方向
 	XY pos;						//キャラクタの位置（中心）
 	XY size;					//キャラクタ画像のサイズ
@@ -80,6 +88,8 @@ struct CHARACTER {
 	int moveSpeed;				//キャラクタの移動量
 	int life;					//キャラクタの体力
 	int lifeMax;				//キャラクタの体力最大
+	int point;
+	int index;
 	int animCnt;				//キャラクタのアニメーション用カウンタ
 	int imgLockCnt;				//キャラクタのイメージ固定用カウンタ
 	bool visible;				//true：表示する	false：表示されない

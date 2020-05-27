@@ -4,6 +4,7 @@
 #include "KeyCheck.h"
 #include "player.h"
 #include "stage.h"
+#include "enemy.h"
 
 
 // 変数
@@ -131,10 +132,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		sceneCounter++;
 		//playerCounter++;
 
-		SetDrawScreen(DX_SCREEN_BACK);
-		DrawRotaGraph(SCREEN_SIZE_X + (PLAYER_SIZE_X * 2), SCREEN_SIZE_Y / 2, 3.0f, 0, Screen, FALSE);
+		/*SetDrawScreen(DX_SCREEN_BACK);
+		DrawRotaGraph(SCREEN_SIZE_X + (PLAYER_SIZE_X * 2), SCREEN_SIZE_Y / 2, 3.0f, 0, Screen, FALSE);*/
 		ScreenFlip();
-		SetDrawScreen(Screen);
+		/*SetDrawScreen(Screen);*/
 	}
 
 	DxLib_End();		// DXライブラリの終了処理
@@ -176,6 +177,7 @@ bool SystemInit(void)
 	KeyInit();				// キー情報の初期化
 
 	PlayerSystemInit();
+	EnemySystemInit();
 	StageSysteminit();
 	return true;
 }
@@ -190,6 +192,7 @@ void InitScene(void)
 
 	StageGameInit();
 	PlayerGameInit();
+	EnemyGameInit();
 }
 
 
@@ -237,6 +240,8 @@ void GameScene(void)
 	// 画面描画
 	StageGameDraw();
 	PlayerDraw();
+	EnemyGameDrawOrder(sceneCounter);
+	EnemyDraw();
 	GameDraw();
 
 	// Pauseメッセージを描画

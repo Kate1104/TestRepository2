@@ -2,6 +2,7 @@
 #include "main.h"
 #include "player.h"
 #include "stage.h"
+#include "enemy.h"
 
 int chipImage[2];			//Ï¯ÌßÁ¯Ìß‰æ‘œ
 
