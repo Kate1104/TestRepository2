@@ -220,20 +220,13 @@ void PlayerControl(void)
 		playerPosHitDown = playerPosHit;
 		playerPosHitDown.y += player.hitPosE.y - 1;
 
-		//スクロール
+		//スクロール　右
 		if (playerPosCopy.x - mapPos.x <= SCROLL_X_MIN)
 		{
 			if (player.velocity.x < -VELOCITY_X_MAX)player.velocity.x = -VELOCITY_X_MAX;
 			mapPos.x += player.velocity.x;
 		}
-
-		/*if (playerPosCopy.y - mapPos.y <= SCROLL_Y_MIN)
-		{
-			if (player.velocity.y < -VELOCITY_X_MAX)player.velocity.y = -VELOCITY_X_MAX;
-			mapPos.y += player.velocity.y;
-		}*/
 	}
-
 	else if (player.velocity.x > 0)
 	{
 		playerPosCopy.x += player.velocity.x;
@@ -245,33 +238,22 @@ void PlayerControl(void)
 		playerPosHitDown = playerPosHit;
 		playerPosHitDown.y += player.hitPosE.y - 1;
 
-		//スクロール
+		//スクロール　左
 		if (playerPosCopy.x - mapPos.x >= SCROLL_X_MAX)
 		{
 			if (player.velocity.x > VELOCITY_X_MAX)player.velocity.x = VELOCITY_X_MAX;
 			mapPos.x += player.velocity.x;
+		}
+	}
 
-			//スクロール制限　右
-			if (player.pos.x - mapPos.x > 200)	//距離を測る
-			{
-				mapPos.x += player.velocity.x;
-			}
-			//スクロール制限　左
-			if (player.pos.x - mapPos.x < 150)	//距離を測る
-			{
-				mapPos.x -= player.velocity.x;
-			}
 
-			////スクロール制限　上
-			//if (player.pos.y + CHIP_SIZE_Y)	//距離を測る
-			//{
-			//	mapPos.y += CHIP_SIZE_Y;
-			//}
-			////スクロール制限　下
-			//if (player.pos.y - CHIP_SIZE_Y)	//距離を測る
-			//{
-			//	mapPos.y -= CHIP_SIZE_Y;
-			//}
+	if (player.velocity.y > 0)
+	{
+		//スクロール　上下
+		if (player.pos.y =+ CHIP_SIZE_Y)
+		{
+			player.pos.y = player.pos.y + CHIP_SIZE_Y;
+			mapPos.y = +CHIP_SIZE_Y;
 		}
 	}
 
@@ -360,8 +342,8 @@ void PlayerDraw(void)
 	player.animCnt++;
 
 	SetDrawBright(255, 255, 255); //明るく
-	/*DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
+	DrawGraph(player.pos.x - player.offsetSize.x - mapPos.x
 		, player.pos.y - player.offsetSize.y - mapPos.y
-		, rightImage, true);*/
+		, rightImage, true);
 
 }

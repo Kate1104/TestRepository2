@@ -133,9 +133,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		//playerCounter++;
 
 		/*SetDrawScreen(DX_SCREEN_BACK);
-		DrawRotaGraph(SCREEN_SIZE_X + (PLAYER_SIZE_X * 2), SCREEN_SIZE_Y / 2, 3.0f, 0, Screen, FALSE);*/
+		DrawRotaGraph(SCREEN_SIZE_X + (PLAYER_SIZE_X * 2), SCREEN_SIZE_Y / 2, 3.0f, 0, Screen, FALSE);
 		ScreenFlip();
-		/*SetDrawScreen(Screen);*/
+		SetDrawScreen(Screen);*/
+
+		ScreenFlip();		//テスト用
 	}
 
 	DxLib_End();		// DXライブラリの終了処理
@@ -240,7 +242,6 @@ void GameScene(void)
 	// 画面描画
 	StageGameDraw();
 	PlayerDraw();
-	EnemyGameDrawOrder(sceneCounter);
 	EnemyDraw();
 	GameDraw();
 

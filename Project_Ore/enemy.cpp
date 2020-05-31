@@ -44,6 +44,7 @@ bool EnemyHitCheck(void)
 void EnemyControl(void)
 {
 	bool moveFlag;
+	moveFlag = false;
 
 	for (int i = 0; i < ENEMY_TYPE_MAX; i++)
 	{
@@ -51,10 +52,8 @@ void EnemyControl(void)
 		enemyType[i].runFlag = false;
 		enemyType[i].shotFlag = false;
 
-		enemyType[i].imgLockCnt++;
-
 		//敵の動き
-		if (player.pos.x - enemyType[i].pos.x < 100)
+		if (player.pos.x - enemyType[i].pos.x > 100)
 		{
 			enemyType[i].moveDir = DIR_LEFT;
 			moveFlag = true;
@@ -64,23 +63,43 @@ void EnemyControl(void)
 	}
 }
 
-void EnemyGameDrawOrder(int index)
-{
-	enemyType[index].animCnt++;
-
-	if (enemyType[index].runFlag)
-	{
-		DrawGraph(enemyType[index].pos.x - enemyType[index].offsetSize.x - mapPos.x
-			, enemyType[index].pos.y - enemyType[index].offsetSize.y - mapPos.y
-			, enemyMimage[1][index], true);
-	}
-	else
-	{
-		DrawGraph(232, SCREEN_SIZE_Y / 2 - 64, enemySimage, true);
-	}
-}
-
 void EnemyDraw(void)
 {
-	
+	for (int i = 0; i < ENEMY_TYPE_MAX; i++)
+	{
+		enemyType[i].animCnt++;
+
+		if (player.pos.x - enemyType[i].pos.x > 100)
+		{
+			/*DrawGraph(enemyType[i].pos.x - enemyType[i].offsetSize.x - mapPos.x
+				, enemyType[i].pos.y - enemyType[i].offsetSize.y - mapPos.y
+				, enemyMimage[enemyType[ENEMY_TYPE_BAT].cherType][(enemyType[ENEMY_TYPE_BAT].animCnt / 10) % 4], true);*/
+
+			DrawGraph(550 - mapPos.x
+				, SCREEN_SIZE_Y / 2 - 64 - mapPos.y
+				, enemyMimage[enemyType[ENEMY_TYPE_BAT].cherType][(enemyType[ENEMY_TYPE_BAT].animCnt / 10) % 4], true);
+		}
+		else
+		{
+			DrawGraph(350 - mapPos.x, SCREEN_SIZE_Y / 2 - 64 - mapPos.y, enemySimage, true);
+		}
+	}
+
+	// プレイヤーのサイズ枠
+	DrawBox(enemyType[ENEMY_TYPE_BAT].pos.x - enemyType[ENEMY_TYPE_BAT].offsetSize.x - mapPos.x
+		, enemyType[ENEMY_TYPE_BAT].pos.y - enemyType[ENEMY_TYPE_BAT].offsetSize.y - mapPos.y
+		, enemyType[ENEMY_TYPE_BAT].pos.x + enemyType[ENEMY_TYPE_BAT].offsetSize.x - mapPos.x
+		, enemyType[ENEMY_TYPE_BAT].pos.y + enemyType[ENEMY_TYPE_BAT].offsetSize.y - mapPos.y
+		, GetColor(255, 0, 0)
+		, false);
+
+	// プレイヤーの当たり判定枠
+	DrawBox(enemyType[ENEMY_TYPE_BAT].pos.x - enemyType[ENEMY_TYPE_BAT].hitPosS.x - mapPos.x
+		, enemyType[ENEMY_TYPE_BAT].pos.y - enemyType[ENEMY_TYPE_BAT].hitPosS.y - mapPos.y
+		, enemyType[ENEMY_TYPE_BAT].pos.x + enemyType[ENEMY_TYPE_BAT].hitPosE.x - mapPos.x
+		, enemyType[ENEMY_TYPE_BAT].pos.y + enemyType[ENEMY_TYPE_BAT].hitPosE.y - mapPos.y
+		, GetColor(255, 255, 255)
+		, false);
+
+	DrawFormatString(0, 64, GetColor(255, 255, 255), "enemyPos : (%d , %d)", enemyType[ENEMY_TYPE_BAT].pos);
 }

@@ -9,5 +9,4 @@ void EnemySystemInit(void);					//SystemInitÇ…ë}ì¸
 void EnemyGameInit(void);					//Å@InitScene
 bool EnemyHitCheck(void);
 void EnemyControl(void);					//Å@Game
-void EnemyGameDrawOrder(int index);
 void EnemyDraw(void);						//Å@GameDraw
